@@ -24,9 +24,8 @@ def display_menu():
             continue
         elif choice == "1":
             print("Viewing inventory...\n")
-            inventory = load_inventory(INVENTORY_FILE)
-            for item in inventory:
-                print(f"{item},")
+            view_inventory(load_inventory(INVENTORY_FILE))
+            
 
         elif choice == "7":
             print("Exiting the program.")
@@ -74,7 +73,13 @@ def save_inventory(inventory, filename):
 
 
 
-#def view_inventory(inventory):
+def view_inventory(inventory):
+    if not inventory:
+        print("No inventory items found.")
+        return
+
+    for number, item in enumerate(inventory, start=1):
+        print(f"{number}. {item['name']} | {item['category']} | {item['quantity']}")
 
 
 
