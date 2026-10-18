@@ -1,0 +1,7 @@
+Laptop Charger|Electronics|8
+Printer Paper|Office Supplies|25
+Dry-Erase Markers|Classroom Supplies|4
+Pencils|Classroom Supplies|30
+USB Cable|Electronics|12
+HDMI Cable|Electronics|5
+Notebook|Office Supplies|15
