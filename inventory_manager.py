@@ -65,7 +65,12 @@ def load_inventory(filename):
     
 
 
-#def save_inventory(inventory, filename):
+def save_inventory(inventory, filename):
+    with open(filename, "w") as file:
+        for item in inventory:
+            file.write(
+                f"{item['name']}|{item['category']}|{item['quantity']}\n"
+            )
 
 
 
