@@ -34,6 +34,9 @@ def display_menu():
         elif choice == "4":
             print("Removing an item...\n")
             remove_item(load_inventory(INVENTORY_FILE))
+        elif choice == "5":
+            print("Searching inventory...\n")
+            search_inventory(load_inventory(INVENTORY_FILE))
 
         elif choice == "7":
             print("Exiting the program.")
@@ -228,7 +231,28 @@ def remove_item(inventory):
     print(f"Item removed: {removed_item['name']}")
 
 
-#def search_inventory(inventory):
+def search_inventory(inventory):
+    search_term = input("Enter an item name to search for: ").strip()
+
+    # Reject empty searches
+    if not search_term:
+        print("Error: Search term cannot be empty.")
+        return
+
+    # Find every item whose name contains the search term
+    matches = []
+
+    for item in inventory:
+        if search_term.lower() in item["name"].lower():
+            matches.append(item)
+
+    # Display the results
+    if not matches:
+        print("No inventory items matched your search.")
+        return
+
+    for number, item in enumerate(matches, start=1):
+        print(f"{number}. {item['name']} | {item['category']} | {item['quantity']}")
 
 
 
