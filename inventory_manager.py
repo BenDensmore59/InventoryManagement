@@ -28,7 +28,9 @@ def display_menu():
         elif choice == "2":
             print("Adding an item...\n")
             add_item(load_inventory(INVENTORY_FILE))
-            
+        elif choice == "3":
+            print("Updating item quantity...\n")
+            update_quantity(load_inventory(INVENTORY_FILE))
 
         elif choice == "7":
             print("Exiting the program.")
@@ -141,7 +143,51 @@ def add_item(inventory):
     print("Item added successfully.")
 
 
-#def update_quantity(inventory):
+def update_quantity(inventory):
+    # Check whether the inventory is empty
+    if not inventory:
+        print("No inventory items found.")
+        return
+
+    # Display the numbered inventory
+    view_inventory(inventory)
+
+    # Ask which item to update
+    while True:
+        item_input = input("Enter the item number to update: ").strip()
+
+        if not item_input.isdigit():
+            print("Error: Please enter a valid item number.")
+            continue
+
+        item_number = int(item_input)
+
+        if item_number < 1 or item_number > len(inventory):
+            print("Error: Item number is outside the available range.")
+            continue
+
+        break
+
+    # Ask for the new quantity
+    while True:
+        quantity_input = input("Enter the new quantity: ").strip()
+
+        if not quantity_input.isdigit():
+            print("Error: Quantity must be a non-negative whole number.")
+            continue
+
+        new_quantity = int(quantity_input)
+        break
+
+    # Update the correct dictionary
+    item = inventory[item_number - 1]
+    item["quantity"] = new_quantity
+
+    # Save the updated inventory
+    save_inventory(inventory, INVENTORY_FILE)
+
+    # Display confirmation
+    print(f"{item['name']} quantity updated to {new_quantity}.")
 
 
 #def remove_item(inventory):
