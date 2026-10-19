@@ -31,6 +31,9 @@ def display_menu():
         elif choice == "3":
             print("Updating item quantity...\n")
             update_quantity(load_inventory(INVENTORY_FILE))
+        elif choice == "4":
+            print("Removing an item...\n")
+            remove_item(load_inventory(INVENTORY_FILE))
 
         elif choice == "7":
             print("Exiting the program.")
@@ -190,7 +193,39 @@ def update_quantity(inventory):
     print(f"{item['name']} quantity updated to {new_quantity}.")
 
 
-#def remove_item(inventory):
+def remove_item(inventory):
+    # Check whether the inventory is empty
+    if not inventory:
+        print("No inventory items found.")
+        return
+
+    # Display the numbered inventory
+    view_inventory(inventory)
+
+    # Ask which item to remove
+    while True:
+        item_input = input("Enter the item number to remove: ").strip()
+
+        if not item_input.isdigit():
+            print("Error: Please enter a valid item number.")
+            continue
+
+        item_number = int(item_input)
+
+        if item_number < 1 or item_number > len(inventory):
+            print("Error: Item number is outside the available range.")
+            continue
+
+        break
+
+    # Remove the selected item
+    removed_item = inventory.pop(item_number - 1)
+
+    # Save the updated inventory
+    save_inventory(inventory, INVENTORY_FILE)
+
+    # Display confirmation
+    print(f"Item removed: {removed_item['name']}")
 
 
 #def search_inventory(inventory):
