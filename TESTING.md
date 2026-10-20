@@ -11,19 +11,19 @@
 
 | 5 | Reject duplicate item name | Enter an item name that already exists, but with different capitalization. | Duplicate item is rejected and the user is prompted to enter a different name. | Displayed an error message. | Pass |
 
-| 6 | Reject nonnumeric quantity | Enter `abc` as the quantity when adding an item. | Error message is displayed, and the user is prompted to enter a valid quantity. | Displayed an error message. | Pass |
+| 6 | Reject nonnumeric quantity | Enter 'abc' as the quantity when adding an item. | Error message is displayed, and the user is prompted to enter a valid quantity. | Displayed an error message. | Pass |
 
-| 7 | Reject negative quantity | Enter `-5` as the quantity when adding an item. | Negative quantity is rejected, and the user is prompted to enter a valid quantity. | Displayed an error message. | Pass |
+| 7 | Reject negative quantity | Enter -5 as the quantity when adding an item. | Negative quantity is rejected, and the user is prompted to enter a valid quantity. | Displayed an error message. | Pass |
 
-| 8 | Update valid item | Select an existing item and enter a new quantity of `15`. | Item quantity is updated, a confirmation message displays the item name and new quantity, and changes are saved. | item quanitity was updated and a confirmation message was displayed | Pass |
+| 8 | Update valid item | Select an existing item and enter a new quantity of 15. | Item quantity is updated, a confirmation message displays the item name and new quantity, and changes are saved. | item quanitity was updated and a confirmation message was displayed | Pass |
 
-| 9 | Reject invalid item number | Enter `0` or a number greater than the number of available items when updating or removing an item. | Error message is displayed, and the user is prompted to enter a valid item number. | Error message displayed with confirmation message of outside available range  | Pass |
+| 9 | Reject invalid item number | Enter 0 or a number greater than the number of available items when updating or removing an item. | Error message is displayed, and the user is prompted to enter a valid item number. | Error message displayed with confirmation message of outside available range  | Pass |
 
 | 10 | Remove item | Select an existing item to remove. | Item is removed, a confirmation message displays the removed item's name, and changes are saved. | Confirmation item removed: item name message | Pass |
 
-| 11 | Case-insensitive partial search | Search for `charger` when the inventory contains `Laptop Charger` and `USB-C Charger`. | Both matching items are displayed, regardless of capitalization. | Both USB and HDMI cable items displayed as enumerated | Pass |
+| 11 | Case-insensitive partial search | Search 'cab' in search input when two different cables exist in inventory. | Both matching items are displayed, regardless of capitalization. | Both USB and HDMI cable items displayed as enumerated | Pass |
 
-| 12 | Search with no matches | Search for `Keyboard` when no inventory item contains that name. | Displays `No inventory items matched your search.` | output matchs expected result | Pass |
+| 12 | Search with no matches | Search for keyboard when no inventory item contains that name. | Displays no inventory items matched your search. | output matchs expected result | Pass |
 
 | 13 | Verify inventory summary | Use an inventory containing 8 items, a total quantity of 86, 2 low-stock items, and specified category counts. | Displays 8 items, total quantity of 86, 2 low-stock items, and the correct number of items in each category. | output matches expected result | Pass |
 
