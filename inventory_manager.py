@@ -1,3 +1,9 @@
+"""A command-line inventory manager created for CPS 310.
+
+Author: Benjamin Densmore
+Course: CPS 310
+"""
+
 INVENTORY_FILE = "inventory.txt"
 
 
@@ -7,6 +13,7 @@ def main():
 
 
 def display_menu():
+    """Display the inventory menu and prompt the user for a valid choice."""
     while True:
         print("\nInventory Manager")
         print("\n1. View inventory")
@@ -37,7 +44,9 @@ def display_menu():
         elif choice == "5":
             print("Searching inventory...\n")
             search_inventory(load_inventory(INVENTORY_FILE))
-
+        elif choice == "6":
+            print("Viewing inventory summary...\n")
+            display_summary(load_inventory(INVENTORY_FILE))
         elif choice == "7":
             print("Exiting the program.")
             break
@@ -47,6 +56,7 @@ def display_menu():
 
 
 def load_inventory(filename):
+    """Load inventory items from a text file into a list of dictionaries."""
     inventory = []
 
     try:
@@ -76,6 +86,7 @@ def load_inventory(filename):
 
 
 def save_inventory(inventory, filename):
+    """Save the complete inventory to a text file."""
     with open(filename, "w") as file:
         for item in inventory:
             file.write(
@@ -85,6 +96,7 @@ def save_inventory(inventory, filename):
 
 
 def view_inventory(inventory):
+    """Display all inventory items with numbers starting at 1."""
     if not inventory:
         print("No inventory items found.")
         return
@@ -95,6 +107,7 @@ def view_inventory(inventory):
 
 
 def add_item(inventory):
+    """Prompt the user for a new inventory item and add it to the inventory."""
     # Ask for the item name
     while True:
         name = input("Enter item name: ").strip()
@@ -150,6 +163,7 @@ def add_item(inventory):
 
 
 def update_quantity(inventory):
+    """Update the quantity of an existing inventory item."""
     # Check whether the inventory is empty
     if not inventory:
         print("No inventory items found.")
@@ -197,6 +211,7 @@ def update_quantity(inventory):
 
 
 def remove_item(inventory):
+    """Remove a selected item from the inventory."""
     # Check whether the inventory is empty
     if not inventory:
         print("No inventory items found.")
@@ -232,6 +247,7 @@ def remove_item(inventory):
 
 
 def search_inventory(inventory):
+    """Search inventory items by full or partial item name."""
     search_term = input("Enter an item name to search for: ").strip()
 
     # Reject empty searches
@@ -256,7 +272,43 @@ def search_inventory(inventory):
 
 
 
-#def display_summary(inventory):
+def display_summary(inventory):
+    """Display a summary of inventory quantities and categories."""
+    # Count the number of unique inventory items
+    unique_items = len(inventory)
+
+    # Calculate the total quantity and low-stock items
+    total_quantity = 0
+    low_stock_items = 0
+    categories = {}
+
+    for item in inventory:
+        total_quantity += item["quantity"]
+
+        if item["quantity"] < 5:
+            low_stock_items += 1
+
+        # Count categories without considering capitalization
+        category_key = item["category"].lower()
+
+        if category_key in categories:
+            categories[category_key]["count"] += 1
+        else:
+            categories[category_key] = {
+                "name": item["category"],
+                "count": 1
+            }
+
+    # Display the summary
+    print("Inventory Summary")
+    print(f"Unique items: {unique_items}")
+    print(f"Total quantity: {total_quantity}")
+    print(f"Low-stock items: {low_stock_items}")
+
+    print("\nItems by category:")
+
+    for category in categories.values():
+        print(f"{category['name']}: {category['count']}")
 
 
 if __name__ == "__main__":
