@@ -5,7 +5,7 @@ Program that allows for inventory management, updating, and viewing
 ## Current Features
 
 -[Inventory adding]
--[Inventory item removal]
+-Inventory item removal
 -[Inventory viewing]
 -[Inventory summary]
 -[Updating inventory quantity]
