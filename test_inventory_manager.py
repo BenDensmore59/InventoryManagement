@@ -1,5 +1,5 @@
 import pytest
-from inventory_manager import find_matching_items, load_inventory, save_inventory
+from inventory_manager import find_matching_items, load_inventory, save_inventory, remove_item_by_number
 
 
 @pytest.fixture
@@ -99,7 +99,6 @@ def test_exact_item_search(tmp_path, sample_inventory):
         ("cab", 1),
         ("electronics", 0), # no matching items
         ("er", 2), # multiple matching items appear
-        #("", 0), # empty search term
     ],
 )
 def test_partial_search(tmp_path, sample_inventory, search_term, expected_count):
@@ -119,5 +118,40 @@ def test_search_ignores_capitalization(tmp_path, sample_inventory):
     inventory = load_inventory(str(test_file))
     # Assert
     assert len(find_matching_items(inventory, "LAPTOP")) == 1
+
+
+@pytest.mark.parametrize(
+    ("item_number", "expected_inventory_index"),
+    [
+        (0, None), # Invalid item number
+        (-1, None), # Negative invalid item number
+        (1, 0), # Remove the first item
+        (2, 1), # Remove the second item
+        (3, 2), # Remove the third item
+        (4, 3), # Remove the last item
+        (5, None), # Larger than inventory size
+    ],
+)
+def test_remove_item(tmp_path, sample_inventory, item_number, expected_inventory_index):
+    # Arrange
+    test_file = tmp_path / "inventory.txt"
+    test_file.write_text("\n".join(sample_inventory))
+    inventory = load_inventory(str(test_file))
+    # Act
+    removed_item = remove_item_by_number(inventory, item_number)
+    # Assert
+    if expected_inventory_index is None:
+        assert removed_item is None
+        assert len(inventory) == len(sample_inventory)
+        return
+
+    expected_name, expected_category, expected_quantity = sample_inventory[
+        expected_inventory_index
+    ].split("|")
+    assert removed_item == {
+        "name": expected_name,
+        "category": expected_category,
+        "quantity": int(expected_quantity),
+    }
 
 
