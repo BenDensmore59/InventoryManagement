@@ -1,5 +1,5 @@
 import pytest
-from inventory_manager import find_matching_items, load_inventory, save_inventory, remove_item_by_number
+from inventory_manager import find_matching_items, load_inventory, save_inventory, remove_item_by_number, update_item_quantity
 
 
 @pytest.fixture
@@ -154,4 +154,30 @@ def test_remove_item(tmp_path, sample_inventory, item_number, expected_inventory
         "quantity": int(expected_quantity),
     }
 
+@pytest.mark.parametrize(
+    ("new_quantity", "expected_updated", "expected_quantity"),
+    [
+        (0, True, 0), # Valid quantity
+        (10, True, 10), # Valid quantity
+        (-1, False, 4), # Negative quantity
+        ("not a number", False, 4), # Invalid quantity
+    ],
+)
+def test_update_quantity(
+    tmp_path, sample_inventory, new_quantity, expected_updated, expected_quantity
+):
+    # Arrange
+    test_file = tmp_path / "inventory.txt"
+    test_file.write_text("\n".join(sample_inventory))
+    inventory = load_inventory(str(test_file))
+    item_number = 2  # Update the second item
+    # Act
+    updated = update_item_quantity(inventory, item_number, new_quantity)
+    # Assert
+    assert updated is expected_updated
+    assert inventory[item_number - 1] == {
+        "name": "Dry-Erase Markers",
+        "category": "Classroom Supplies",
+        "quantity": expected_quantity,
+    }
 

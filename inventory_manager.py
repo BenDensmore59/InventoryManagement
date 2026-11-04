@@ -192,6 +192,7 @@ def update_quantity(inventory):
     quantity_input = input("Enter the new quantity: ").strip()
     if not quantity_input.isdigit():
         print("Error: Quantity must be a non-negative whole number.")
+        return
 
     new_quantity = int(quantity_input)
     update_item_quantity(inventory, item_number, new_quantity)
@@ -296,6 +297,9 @@ def remove_item_by_number(inventory, item_number):
     return None
 
 def update_item_quantity(inventory, item_number, new_quantity):
+    if not isinstance(new_quantity, int) or new_quantity < 0:
+        return False
+
     if 1 <= item_number <= len(inventory):
         inventory[item_number - 1]["quantity"] = new_quantity
         return True
@@ -343,5 +347,4 @@ def validate_new_item(inventory, name, category, quantity):
 
 if __name__ == "__main__":
     main()
-
 
