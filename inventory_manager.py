@@ -146,15 +146,9 @@ def add_item(inventory):
             quantity = int(quantity_input)
             break
 
-    # Create the new item dictionary
-    new_item = {
-        "name": name,
-        "category": category,
-        "quantity": quantity
-    }
-
-    # Add the item to the inventory list
-    inventory.append(new_item)
+    if not add_item_to_inventory(inventory, name, category, quantity):
+        print("Error: Unable to add item.")
+        return
 
     # Save the updated inventory to the file
     save_inventory(inventory, INVENTORY_FILE)
@@ -189,19 +183,17 @@ def update_quantity(inventory):
         break
 
     # Ask for the new quantity
-    while True:
-        quantity_input = input("Enter the new quantity: ").strip()
+    quantity_input = input("Enter the new quantity: ").strip()
+    if not quantity_input.isdigit():
+        print("Error: Quantity must be a non-negative whole number.")
+        return
 
-        if not quantity_input.isdigit():
-            print("Error: Quantity must be a non-negative whole number.")
-            continue
+    new_quantity = int(quantity_input)
+    update_item_quantity(inventory, item_number, new_quantity)
 
-        new_quantity = int(quantity_input)
-        break
 
     # Update the correct dictionary
     item = inventory[item_number - 1]
-    item["quantity"] = new_quantity
 
     # Save the updated inventory
     save_inventory(inventory, INVENTORY_FILE)
@@ -229,7 +221,7 @@ def remove_item(inventory):
             continue
 
         item_number = int(item_input)
-
+        
         if item_number < 1 or item_number > len(inventory):
             print("Error: Item number is outside the available range.")
             continue
@@ -237,7 +229,7 @@ def remove_item(inventory):
         break
 
     # Remove the selected item
-    removed_item = inventory.pop(item_number - 1)
+    removed_item = remove_item_by_number(inventory, item_number)
 
     # Save the updated inventory
     save_inventory(inventory, INVENTORY_FILE)
@@ -256,12 +248,8 @@ def search_inventory(inventory):
         return
 
     # Find every item whose name contains the search term
-    matches = []
-
-    for item in inventory:
-        if search_term.lower() in item["name"].lower():
-            matches.append(item)
-
+    matches = find_matching_items(inventory, search_term)
+    
     # Display the results
     if not matches:
         print("No inventory items matched your search.")
@@ -275,29 +263,7 @@ def search_inventory(inventory):
 def display_summary(inventory):
     """Display a summary of inventory quantities and categories."""
     # Count the number of unique inventory items
-    unique_items = len(inventory)
-
-    # Calculate the total quantity and low-stock items
-    total_quantity = 0
-    low_stock_items = 0
-    categories = {}
-
-    for item in inventory:
-        total_quantity += item["quantity"]
-
-        if item["quantity"] < 5:
-            low_stock_items += 1
-
-        # Count categories without considering capitalization
-        category_key = item["category"].lower()
-
-        if category_key in categories:
-            categories[category_key]["count"] += 1
-        else:
-            categories[category_key] = {
-                "name": item["category"],
-                "count": 1
-            }
+    unique_items, total_quantity, low_stock_items, categories = calculate_summary(inventory)
 
     # Display the summary
     print("Inventory Summary")
@@ -309,9 +275,71 @@ def display_summary(inventory):
 
     for category in categories.values():
         print(f"{category['name']}: {category['count']}")
+    # Calculate the total quantity and low-stock items
+    total_quantity = 0
+    low_stock_items = 0
+    categories = {}
+
+
+# Helper functions
+def find_matching_items(inventory, search_term):
+    return [item for item in inventory if search_term.lower() in item["name"].lower()]
+
+def add_item_to_inventory(inventory, name, category, quantity):
+    """Validate and add an inventory item without prompting for user input."""
+    if (
+        not isinstance(name, str)
+        or not name.strip()
+        or "|" in name
+        or name.isdigit()
+        or not isinstance(category, str)
+        or not category.strip()
+        or "|" in category
+        or category.isdigit()
+        or not isinstance(quantity, int)
+        or isinstance(quantity, bool)
+        or quantity < 0
+        or any(item["name"].lower() == name.lower() for item in inventory)
+    ):
+        return False
+
+    inventory.append(
+        {"name": name.strip(), "category": category.strip(), "quantity": quantity}
+    )
+    return True
+
+def remove_item_by_number(inventory, item_number):
+    if 1 <= item_number <= len(inventory):
+        return inventory.pop(item_number - 1)
+    return None
+
+def update_item_quantity(inventory, item_number, new_quantity):
+    if not isinstance(new_quantity, int) or new_quantity < 0:
+        return False
+
+    if 1 <= item_number <= len(inventory):
+        inventory[item_number - 1]["quantity"] = new_quantity
+        return True
+    return False
+
+def calculate_summary(inventory):
+    unique_items = len(inventory)
+    total_quantity = sum(item["quantity"] for item in inventory)
+    low_stock_items = sum(1 for item in inventory if item["quantity"] < 5)
+    categories = {}
+    for item in inventory:
+        category_key = item["category"].lower()
+        if category_key in categories:
+            categories[category_key]["count"] += 1
+        else:
+            categories[category_key] = {
+                "name": item["category"],
+                "count": 1
+            }
+    return unique_items, total_quantity, low_stock_items, categories
+
+
 
 
 if __name__ == "__main__":
     main()
-
-
