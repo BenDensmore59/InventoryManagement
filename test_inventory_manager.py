@@ -6,6 +6,7 @@ from inventory_manager import (
     remove_item_by_number,
     save_inventory,
     update_item_quantity,
+    calculate_summary,
 )
 
 
@@ -222,3 +223,34 @@ def test_add_item_to_inventory(
             {"name": name, "category": category, "quantity": quantity}
         )
     assert inventory == expected_inventory
+
+def test_calculate_summary(tmp_path, sample_inventory):
+    # Arrange
+    test_file = tmp_path / "inventory.txt"
+    test_file.write_text("\n".join(sample_inventory))
+    inventory = load_inventory(str(test_file))
+    # Act
+    summary = calculate_summary(inventory)
+    # Assert
+    assert summary == (
+    4, # total items
+    50, # total quantity
+    1, # low inventory items (less than 5)
+    {
+        "electronics": {"name": "Electronics", "count": 2}, # two items in Electronics category
+        "classroom supplies": {"name": "Classroom Supplies", "count": 2}, # two items in Classroom Supplies category
+    },
+)
+
+def test_calculate_summary_empty_inventory():
+    # Arrange
+    inventory = []
+    # Act
+    summary = calculate_summary(inventory)
+    # Assert
+    assert summary == (
+        0,
+        0,
+        0,
+        {},
+    )
