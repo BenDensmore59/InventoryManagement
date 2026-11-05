@@ -1,5 +1,12 @@
 import pytest
-from inventory_manager import find_matching_items, load_inventory, save_inventory, remove_item_by_number, update_item_quantity
+from inventory_manager import (
+    add_item_to_inventory,
+    find_matching_items,
+    load_inventory,
+    remove_item_by_number,
+    save_inventory,
+    update_item_quantity,
+)
 
 
 @pytest.fixture
@@ -181,3 +188,37 @@ def test_update_quantity(
         "quantity": expected_quantity,
     }
 
+@pytest.mark.parametrize(
+    ("name", "category", "quantity", "initial_inventory", "expected_added"),
+    [
+        ("Notebook", "School Supplies", 5, [], True), # valid item
+        ("", "School Supplies", 5, [], False),  # empty name
+        ("Notebook", "", 5, [], False),  # empty category
+        ("Note|book", "School Supplies", 5, [], False), # name contains pipe
+        ("Notebook", "School|Supplies", 5, [], False), # category contains pipe
+        ("Notebook", "School Supplies", -1, [], False), # negative quantity
+        (
+            "notebook",
+            "School Supplies",
+            5,
+            [{"name": "Notebook", "category": "School Supplies", "quantity": 2}], 
+            False,  # duplicate name (case-insensitive)
+        ),
+    ],
+)
+def test_add_item_to_inventory(
+    name, category, quantity, initial_inventory, expected_added
+):
+    # Arrange
+    inventory = [item.copy() for item in initial_inventory]
+    original_inventory = [item.copy() for item in inventory]
+    # Act
+    added = add_item_to_inventory(inventory, name, category, quantity)
+    # Assert
+    assert added is expected_added
+    expected_inventory = original_inventory
+    if expected_added:
+        expected_inventory.append(
+            {"name": name, "category": category, "quantity": quantity}
+        )
+    assert inventory == expected_inventory

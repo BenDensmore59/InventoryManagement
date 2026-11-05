@@ -146,15 +146,9 @@ def add_item(inventory):
             quantity = int(quantity_input)
             break
 
-    # Create the new item dictionary
-    new_item = {
-        "name": name,
-        "category": category,
-        "quantity": quantity
-    }
-
-    # Add the item to the inventory list
-    inventory.append(new_item)
+    if not add_item_to_inventory(inventory, name, category, quantity):
+        print("Error: Unable to add item.")
+        return
 
     # Save the updated inventory to the file
     save_inventory(inventory, INVENTORY_FILE)
@@ -291,6 +285,29 @@ def display_summary(inventory):
 def find_matching_items(inventory, search_term):
     return [item for item in inventory if search_term.lower() in item["name"].lower()]
 
+def add_item_to_inventory(inventory, name, category, quantity):
+    """Validate and add an inventory item without prompting for user input."""
+    if (
+        not isinstance(name, str)
+        or not name.strip()
+        or "|" in name
+        or name.isdigit()
+        or not isinstance(category, str)
+        or not category.strip()
+        or "|" in category
+        or category.isdigit()
+        or not isinstance(quantity, int)
+        or isinstance(quantity, bool)
+        or quantity < 0
+        or any(item["name"].lower() == name.lower() for item in inventory)
+    ):
+        return False
+
+    inventory.append(
+        {"name": name.strip(), "category": category.strip(), "quantity": quantity}
+    )
+    return True
+
 def remove_item_by_number(inventory, item_number):
     if 1 <= item_number <= len(inventory):
         return inventory.pop(item_number - 1)
@@ -321,30 +338,8 @@ def calculate_summary(inventory):
             }
     return unique_items, total_quantity, low_stock_items, categories
 
-def validate_new_item(inventory, name, category, quantity):
-    # Check if the item name is empty
-    if not name.strip():
-        print("Error: Item name cannot be empty.")
-        return False
 
-    # Check if the category is empty
-    if not category.strip():
-        print("Error: Category cannot be empty.")
-        return False
 
-    # Check if the quantity is a positive integer
-    if not isinstance(quantity, int) or quantity < 0:
-        print("Error: Quantity must be a positive integer.")
-        return False
-
-    # Check for duplicate item names (case-insensitive)
-    for item in inventory:
-        if item["name"].lower() == name.lower():
-            print("Error: An item with that name already exists.")
-            return False
-
-    return True
 
 if __name__ == "__main__":
     main()
-
